@@ -1,25 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:audioplayers/audio_cache.dart';
+import 'house.dart';
 
-class MoulinPage extends StatefulWidget {
+class WindowPage extends StatefulWidget {
   int round;
-  MoulinPage(this.round);
+  WindowPage(this.round);
   @override
   State<StatefulWidget> createState() {
-    return _MoulinPageState();
+    return _WindowPageState();
   }
 }
 
-class _MoulinPageState extends State<MoulinPage> {
-
-
-
-
+class _WindowPageState extends State<WindowPage> {
   @override
   Widget build(BuildContext context) {
+    AudioCache player = AudioCache();
+    String track;
 
     int round = widget.round;
+    switch (round) {
+      case 0:
+        track = 'music/g1_windmill.wav';
+        break;
+      case 1:
+        track = 'music/g1_hands.wav';
+        break;
+      case 2:
+        track = 'music/g1_bird.wav';
+        break;
+      case 3:
+        track = 'music/g1_fish.wav';
+    }
+    player.play(track);
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -36,15 +50,15 @@ class _MoulinPageState extends State<MoulinPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Guess(0, round, context),
-                  Guess(1, round, context)
+                  Guess(0, round, context, track),
+                  Guess(1, round, context, track)
                 ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Guess(2, round, context),
-                  Guess(3, round, context),
+                  Guess(2, round, context, track),
+                  Guess(3, round, context, track),
                 ],
               ),
             ],
@@ -54,10 +68,10 @@ class _MoulinPageState extends State<MoulinPage> {
     );
   }
 
-  Widget Guess(int imageNumber, int Round, BuildContext context) {
+  Widget Guess(int imageNumber, int round, BuildContext context, String track) {
     bool flipOnTouch = true;
     List<Map<String, dynamic>> images = List<Map<String, dynamic>>();
-    switch (Round) {
+    switch (round) {
       case 0:
         {
           images = [
@@ -73,12 +87,15 @@ class _MoulinPageState extends State<MoulinPage> {
       onFlip: () async {
         if (images[imageNumber]['correctAnswer'] == false) {
           AudioCache player = AudioCache();
-          player.play('music/g1_windmill.wav');
+          player.play(track);
           player.clearCache();
           flipOnTouch = false;
         } else {
           await Future.delayed(Duration(seconds: 2));
-          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => HousePage(round+1)),
+          );
         }
       },
       flipOnTouch: flipOnTouch,

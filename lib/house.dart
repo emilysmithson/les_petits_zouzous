@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'moulin.dart';
+import 'window.dart';
 import 'package:audioplayers/audio_cache.dart';
 
 class HousePage extends StatefulWidget {
+  int round;
+  HousePage(this.round);
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _HousePageState();
   }
 }
@@ -13,7 +14,7 @@ class HousePage extends StatefulWidget {
 class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
   bool intro = true;
   bool forward = true;
-  int round = 0;
+
   double xCoord;
   double yCoord;
 
@@ -23,9 +24,11 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
   Animation zoomOut;
 
   _navigation(BuildContext context) async {
+    int round = widget.round;
+
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MoulinPage(round)),
+      MaterialPageRoute(builder: (context) => WindowPage(round)),
     );
     setState(() {
       intro = false;
@@ -38,7 +41,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     animationController =
-        AnimationController(duration: const Duration(seconds: 6), vsync: this)
+        AnimationController(duration: const Duration(seconds: 8), vsync: this)
           ..addStatusListener((status) {
             print(status);
             if (status == AnimationStatus.completed) {
@@ -77,6 +80,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    int round = widget.round;
     switch (round) {
       case 0:
         {

@@ -11,9 +11,16 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  AudioCache player;
-  AudioPlayer audioPlayer;
+  AudioCache cache = AudioCache(); // you have this
+  AudioPlayer player; // create this
 
+  void _playFile() async {
+    player = await cache.play('music/pzz_loop2.wav'); // assign player here
+  }
+
+  void _stopFile() {
+    player?.stop(); // stop the file like this
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +34,7 @@ class _NavigationPageState extends State<NavigationPage> {
               Image.asset('assets/images/title.png'),
               GestureDetector(
                 onTap: () {
-                  audioPlayer.stop();
+                  _stopFile();
                   PlayMoulin();
                 },
                 child: Image.asset('assets/images/g1_button.png'),
@@ -44,24 +51,15 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   void PlayMoulin() async {
-    player.play('music/g1_intro.wav');
-
+    _stopFile();
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HousePage()),
+      MaterialPageRoute(builder: (context) => HousePage(0)),
     );
-    player.clearCache();
   }
 
   @override
   void initState() {
-    _playMusic();
-  }
-
-
-  void _playMusic() async {
-    player = AudioCache();
-    audioPlayer = await player.loop('music/pzz_loop2.wav');
-    player.clearCache();
+    _playFile();
   }
 }
