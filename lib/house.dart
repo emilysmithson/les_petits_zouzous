@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'window.dart';
-import 'package:audioplayers/audio_cache.dart';
 
 class HousePage extends StatefulWidget {
-  int round;
-  HousePage(this.round);
+  HousePage();
   @override
   State<StatefulWidget> createState() {
     return _HousePageState();
@@ -12,109 +10,291 @@ class HousePage extends StatefulWidget {
 }
 
 class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
+  int round = 0;
+  double xCoord = 0.175;
+  double yCoord = -1 / 14;
   bool intro = true;
-  bool forward = true;
-
-  double xCoord;
-  double yCoord;
-
   AnimationController animationController;
   Animation fade;
-  Animation zoomIn;
-  Animation zoomOut;
-
-  _navigation(BuildContext context) async {
-    int round = widget.round;
-
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => WindowPage(round)),
-    );
-    setState(() {
-      intro = false;
-      round = result;
-      animationController.forward(from: 0);
-    });
-  }
-
+  Animation zoom;
+  bool zoomedOut = false;
+  int time = 1;
   @override
   void initState() {
-    super.initState();
-    animationController =
-        AnimationController(duration: const Duration(seconds: 8), vsync: this)
-          ..addStatusListener((status) {
-            print(status);
-            if (status == AnimationStatus.completed) {
-              _navigation(context);
-            }
-          });
-    fade = Tween<double>(
-      begin: 1,
-      end: 0,
-    ).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Interval(0, 0.3),
-      )..addListener(
-          () {
-            setState(() {});
-          },
-        ),
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: time),
     );
-    zoomIn = Tween<double>(
-      begin: 1,
-      end: 9,
-    ).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Interval(0.4, 1.0),
-      )..addListener(
-          () {
-            setState(() {});
-          },
-        ),
-    );
-
     animationController.forward();
+
+    super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    print('dispose');
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    int round = widget.round;
     switch (round) {
       case 0:
         {
-          xCoord = 0.175;
-          yCoord = -1 / 14;
+          fade = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
+              parent: animationController, curve: Interval(0, 1)))
+            ..addListener(() {
+              setState(() {});
+            })
+            ..addStatusListener((status) {
+              if (status == AnimationStatus.completed && intro) {
+                intro = false;
+                zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
+                    parent: animationController, curve: Interval(0, 1)))
+                  ..addListener(() {
+                    setState(() {});
+                  })
+                  ..addStatusListener(
+                    (status) {
+                      if (status == AnimationStatus.completed && round == 0) {
+                        animationController.stop();
+                        animationController.dispose();
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WindowPage(round)))
+                            .whenComplete(
+                          () {
+                            setState(
+                              () {
+                                round++;
+                                zoomedOut = false;
+
+                                animationController = AnimationController(
+                                  vsync: this,
+                                  duration: Duration(seconds: 2),
+                                );
+                                animationController.forward(from: 0);
+                              },
+                            );
+                          },
+                        );
+                        zoom.removeStatusListener((status) {});
+                        fade.removeStatusListener((status) {});
+                        animationController.removeStatusListener((status) {});
+                      }
+                    },
+                  );
+
+                animationController.forward(from: 0);
+              }
+            });
         }
         break;
       case 1:
         {
-          xCoord = -0.165;
-          yCoord = -1 / 14;
+          if (!zoomedOut) {
+            zoom = Tween<double>(begin: 9, end: 1).animate(
+              CurvedAnimation(
+                parent: animationController,
+                curve: Interval(0.0, 1.0),
+              ),
+            )
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener((status) {
+                if (status == AnimationStatus.completed&& round ==1) {
+                  animationController.dispose();
+                  zoomedOut = true;
+                  animationController = AnimationController(
+                    vsync: this,
+                    duration: Duration(seconds: time),
+                  );
+                  xCoord = -0.165;
+                  yCoord = -1 / 14;
+                  animationController.forward(from: 0);
+                }
+              });
+          } else {
+            zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
+                parent: animationController, curve: Interval(0.0, 1.0)))
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener(
+                    (status) {
+                  if (status == AnimationStatus.completed) {
+                    if(animationController!=null){
+                    animationController.dispose();}
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WindowPage(round)))
+                        .whenComplete(
+                          () {
+                        setState(
+                              () {
+                            round++;
+                            zoomedOut = false;
+
+                            animationController = AnimationController(
+                              vsync: this,
+                              duration: Duration(seconds: time),
+                            );
+                            animationController.forward(from: 0);
+                          },
+                        );
+                      },
+                    );
+                    zoom.removeStatusListener((status) {});
+                    fade.removeStatusListener((status) {});
+                    animationController.removeStatusListener((status) {});
+                  }
+                },
+              );
+          }
         }
         break;
       case 2:
         {
-          xCoord = 0.205;
-          yCoord = 0.25;
+          if (!zoomedOut) {
+            zoom = Tween<double>(begin: 9, end: 1).animate(
+              CurvedAnimation(
+                parent: animationController,
+                curve: Interval(0.0, 1.0),
+              ),
+            )
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener((status) {
+                if (status == AnimationStatus.completed) {
+                  animationController.dispose();
+                  zoomedOut = true;
+                  animationController = AnimationController(
+                    vsync: this,
+                    duration: Duration(seconds: time),
+                  );
+                  xCoord = 0.205;
+                  yCoord = 0.25;
+                  animationController.forward(from: 0);
+                }
+              });
+          } else {
+            zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
+                parent: animationController, curve: Interval(0.0, 1.0)))
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener(
+                (status) {
+                  if (status == AnimationStatus.completed) {
+                    animationController.dispose();
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WindowPage(round)))
+                        .whenComplete(
+                      () {
+                        setState(
+                          () {
+                            round++;
+                            zoomedOut = false;
+
+                            animationController = AnimationController(
+                              vsync: this,
+                              duration: Duration(seconds: time),
+                            );
+                            animationController.forward(from: 0);
+                          },
+                        );
+                      },
+                    );
+                    zoom.removeStatusListener((status) {});
+                    fade.removeStatusListener((status) {});
+                    animationController.removeStatusListener((status) {});
+                  }
+                },
+              );
+          }
         }
         break;
-
-      default:
+      case 3:
         {
-          xCoord = -0.24;
-          yCoord = 0.25;
+          if (!zoomedOut) {
+            zoom = Tween<double>(begin: 9, end: 1).animate(
+              CurvedAnimation(
+                parent: animationController,
+                curve: Interval(0.0, 1.0),
+              ),
+            )
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener((status) {
+                if (status == AnimationStatus.completed) {
+                  animationController.dispose();
+                  zoomedOut = true;
+                  animationController = AnimationController(
+                    vsync: this,
+                    duration: Duration(seconds: time),
+                  );
+                  xCoord = -0.24;
+                  yCoord = 0.25;
+                  animationController.forward(from: 0);
+                }
+              });
+          } else {
+            zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
+                parent: animationController, curve: Interval(0.0, 1.0)))
+              ..addListener(() {
+                setState(() {});
+              })
+              ..addStatusListener(
+                    (status) {
+                  if (status == AnimationStatus.completed) {
+                    animationController.dispose();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => WindowPage(round)))
+                        .whenComplete(
+                          () {
+                        setState(
+                              () {
+                            round++;
+                            zoomedOut = false;
+
+                            animationController = AnimationController(
+                              vsync: this,
+                              duration: Duration(seconds:time ),
+                            );
+                            animationController.forward(from: 0);
+                          },
+                        );
+                      },
+                    );
+                    zoom.removeStatusListener((status) {});
+                    fade.removeStatusListener((status) {});
+                    animationController.removeStatusListener((status) {});
+                  }
+                },
+              );
+          }
         }
         break;
     }
+
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       body: Stack(
         children: <Widget>[
           Center(
             child: Transform.scale(
-              scale: zoomIn.value,
+              scale: intro ? 1 : zoom.value,
               origin: Offset(
                 -MediaQuery.of(context).size.width * xCoord,
                 MediaQuery.of(context).size.height * yCoord,

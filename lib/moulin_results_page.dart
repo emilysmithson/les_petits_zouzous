@@ -3,6 +3,8 @@ import 'navigation_page.dart';
 import 'package:audioplayers/audio_cache.dart';
 
 class MoulinResultsPage extends StatefulWidget {
+  int score;
+  MoulinResultsPage(this.score);
   @override
   State<StatefulWidget> createState() {
     return _MoulinResultsPageState();
@@ -12,6 +14,7 @@ class MoulinResultsPage extends StatefulWidget {
 class _MoulinResultsPageState extends State<MoulinResultsPage>
     with SingleTickerProviderStateMixin {
   AnimationController animationController;
+  Animation zoomOut;
   Animation panHouse;
   Animation fadeInBravo;
   Animation fadeOutHouse;
@@ -21,16 +24,24 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
   @override
   void initState() {
     animationController =
-        AnimationController(duration: Duration(seconds: 10), vsync: this);
-    panHouse = Tween<double>(begin: 0, end: 0.25).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Interval(0, 0.3),
-    ));
+        AnimationController(duration: Duration(seconds: 12), vsync: this);
+    zoomOut = Tween<double>(begin: 9, end: 1).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Interval(0, 0.2),
+      ),
+    );
+    panHouse = Tween<double>(begin: 0, end: 0.25).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Interval(0.2, 0.4),
+      ),
+    );
 
     fadeInBravo = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.2, 0.4),
+        curve: Interval(0.25, 0.6),
       )..addListener(
           () {
             setState(() {});
@@ -40,7 +51,7 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
     fadeOutHouse = Tween<double>(begin: 1, end: 0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.2, 0.4),
+        curve: Interval(0.4, 0.6),
       )..addListener(
           () {
             setState(() {});
@@ -50,7 +61,7 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
     fadeInBalloon = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.35, 0.6),
+        curve: Interval(0.45, 0.8),
       )..addListener(
           () {
             setState(() {});
@@ -71,34 +82,42 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
 
   @override
   Widget build(BuildContext context) {
-
     animationController.forward();
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
-      body: GestureDetector(onTap:(){ Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NavigationPage()),
-      );},
+      body: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NavigationPage()),
+          );
+        },
         child: Stack(
           children: <Widget>[
-            Positioned.fromRect(
-              rect: Rect.fromLTWH(
-                  0, panHouse.value * size.height, size.width, size.height),
-              child: Opacity(
-                opacity: fadeOutHouse.value == null ? 1 : fadeOutHouse.value,
-                child: Image.asset('assets/images/house2.png'),
-              ),
+
+             Positioned.fromRect(
+                rect: Rect.fromLTWH(
+                    0, panHouse.value * size.height, size.width, size.height),
+                child: Opacity(
+                  opacity: fadeOutHouse.value == null ? 1 : fadeOutHouse.value,
+                  child: Transform.scale(scale: zoomOut.value, origin: Offset(
+                    -MediaQuery.of(context).size.width * -0.24,
+                    MediaQuery.of(context).size.height * 0.25,
+                  ),child: Image.asset('assets/images/house2.png'),),
+                ),
+
             ),
             Positioned.fromRect(
-              rect:
-                  Rect.fromLTWH(0, 0 * size.height, size.width, size.height / 3),
-              child: Opacity(opacity: fadeInBravo.value==null? 0: fadeInBravo.value,
+              rect: Rect.fromLTWH(
+                  0, 0 * size.height, size.width, size.height / 3),
+              child: Opacity(
+                opacity: fadeInBravo.value == null ? 0 : fadeInBravo.value,
                 child: Center(
                   child: Text(
                     'Bravo!!',
-                    style:
-                        TextStyle(fontSize: 120, fontFamily: 'CoveredByYourGrace'),
+                    style: TextStyle(
+                        fontSize: 120, fontFamily: 'CoveredByYourGrace'),
                   ),
                 ),
               ),
@@ -119,7 +138,7 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
                         0, 0.32 * size.height, size.width, size.height / 4),
                     child: Center(
                       child: Text(
-                        '25',
+                        widget.score.toString(),
                         style: TextStyle(
                             fontSize: 90, fontFamily: 'CoveredByYourGrace'),
                       ),

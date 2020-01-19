@@ -11,15 +11,15 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-  AudioCache cache = AudioCache(); // you have this
-  AudioPlayer player; // create this
+//  AudioCache cache = AudioCache();
+//  AudioPlayer player;
 
   void _playFile() async {
-    player = await cache.play('music/pzz_loop2.wav'); // assign player here
+ //   player = await cache.loop('music/pzz_loop2.wav');
   }
 
   void _stopFile() {
-    player?.stop(); // stop the file like this
+ //   player?.stop();
   }
 
   @override
@@ -52,9 +52,10 @@ class _NavigationPageState extends State<NavigationPage> {
 
   void PlayMoulin() async {
     _stopFile();
+ //   cache.play('music/intro.mp3');
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HousePage(0)),
+      MaterialPageRoute(builder: (context) => HousePage()),
     );
   }
 

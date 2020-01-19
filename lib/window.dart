@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'house.dart';
+import 'moulin_results_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WindowPage extends StatefulWidget {
   int round;
@@ -13,15 +15,24 @@ class WindowPage extends StatefulWidget {
 }
 
 class _WindowPageState extends State<WindowPage> {
+  _resetScore() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('score', 0);
+  }
   @override
   Widget build(BuildContext context) {
     AudioCache player = AudioCache();
     String track;
 
+_resetScore();
+
+
     int round = widget.round;
     switch (round) {
       case 0:
+
         track = 'music/g1_windmill.wav';
+
         break;
       case 1:
         track = 'music/g1_hands.wav';
@@ -70,15 +81,50 @@ class _WindowPageState extends State<WindowPage> {
 
   Widget Guess(int imageNumber, int round, BuildContext context, String track) {
     bool flipOnTouch = true;
+    int scoreForRound = 10;
     List<Map<String, dynamic>> images = List<Map<String, dynamic>>();
     switch (round) {
       case 0:
         {
+
           images = [
-            {'url': 'assets/images/g1_balloon.png', 'correctAnswer': false},
-            {'url': 'assets/images/g1_bird.png', 'correctAnswer': false},
-            {'url': 'assets/images/g1_car.png', 'correctAnswer': false},
             {'url': 'assets/images/g1_windmill.png', 'correctAnswer': true},
+            {'url': 'assets/images/g1_balloon.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_cake.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_car.png', 'correctAnswer': false},
+          ];
+        }
+        break;
+      case 1:
+        {
+          images = [
+
+            {'url': 'assets/images/g1_cat.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_dog.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_fish.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_hands.png', 'correctAnswer': true},
+          ];
+        }
+        break;
+      case 2:
+        {
+          images = [
+
+            {'url': 'assets/images/g1_hat.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_bird.png', 'correctAnswer': true},
+            {'url': 'assets/images/g1_kite.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_scooter.png', 'correctAnswer': false},
+          ];
+        }
+        break;
+      case 3:
+        {
+          images = [
+
+            {'url': 'assets/images/g1_socks.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_fish.png', 'correctAnswer': true},
+            {'url': 'assets/images/g1_spider.png', 'correctAnswer': false},
+            {'url': 'assets/images/g1_tree.png', 'correctAnswer': false},
           ];
         }
     }
@@ -86,16 +132,18 @@ class _WindowPageState extends State<WindowPage> {
     return FlipCard(
       onFlip: () async {
         if (images[imageNumber]['correctAnswer'] == false) {
+         // scoreForRound = scoreForRound - 3;
           AudioCache player = AudioCache();
           player.play(track);
-          player.clearCache();
           flipOnTouch = false;
         } else {
+          //_addScore(scoreForRound);
+         // int score = await _getScore();
           await Future.delayed(Duration(seconds: 2));
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HousePage(round+1)),
-          );
+          round == 3
+              ? Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MoulinResultsPage(1)))
+              : Navigator.pop(context, HousePage());
         }
       },
       flipOnTouch: flipOnTouch,
@@ -108,6 +156,17 @@ class _WindowPageState extends State<WindowPage> {
             : Image.asset('assets/images/incorrect.png'),
       ),
     );
+  }
+  Future<int> _getScore()async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int score =  await prefs.getInt('score');
+    return score;
+  }
+   _addScore(int score) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int _score =  await prefs.getInt('score');
+    await prefs.setInt('score', score+_score);
+
   }
 }
 
