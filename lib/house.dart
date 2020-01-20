@@ -18,7 +18,8 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
   Animation fade;
   Animation zoom;
   bool zoomedOut = false;
-  int time = 1;
+  int time = 4;
+  bool zoomedIn = false;
   @override
   void initState() {
     animationController = AnimationController(
@@ -43,6 +44,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
     switch (round) {
       case 0:
         {
+          time = 4;
           fade = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
               parent: animationController, curve: Interval(0, 1)))
             ..addListener(() {
@@ -95,6 +97,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
         break;
       case 1:
         {
+          time = 2;
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
@@ -107,6 +110,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
               })
               ..addStatusListener((status) {
                 if (status == AnimationStatus.completed&& round ==1) {
+                  animationController.stop();
                   animationController.dispose();
                   zoomedOut = true;
                   animationController = AnimationController(
@@ -119,6 +123,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                 }
               });
           } else {
+
             zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
                 parent: animationController, curve: Interval(0.0, 1.0)))
               ..addListener(() {
@@ -126,9 +131,14 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
               })
               ..addStatusListener(
                     (status) {
-                  if (status == AnimationStatus.completed) {
-                    if(animationController!=null){
-                    animationController.dispose();}
+                    if (status == AnimationStatus.completed&&zoomedOut) {
+                      zoomedIn = true;
+                      animationController.stop();
+
+                    animationController.dispose();
+                      zoomedOut = false;
+
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -138,7 +148,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                         setState(
                               () {
                             round++;
-                            zoomedOut = false;
+zoomedIn = false;
 
                             animationController = AnimationController(
                               vsync: this,
@@ -149,9 +159,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                         );
                       },
                     );
-                    zoom.removeStatusListener((status) {});
-                    fade.removeStatusListener((status) {});
-                    animationController.removeStatusListener((status) {});
+
                   }
                 },
               );
@@ -160,6 +168,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
         break;
       case 2:
         {
+          time = 2;
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
@@ -191,7 +200,10 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
               })
               ..addStatusListener(
                 (status) {
-                  if (status == AnimationStatus.completed) {
+                  if (status == AnimationStatus.completed&&zoomedOut) {
+                    animationController.stop();
+                    zoomedIn = true;
+                    zoomedOut = false;
                     animationController.dispose();
                     Navigator.push(
                             context,
@@ -202,8 +214,8 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                         setState(
                           () {
                             round++;
-                            zoomedOut = false;
 
+zoomedIn = false;
                             animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds: time),
@@ -224,6 +236,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
         break;
       case 3:
         {
+          time = 2;
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
@@ -255,7 +268,10 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
               })
               ..addStatusListener(
                     (status) {
-                  if (status == AnimationStatus.completed) {
+                  if (status == AnimationStatus.completed&&zoomedOut) {
+                    animationController.stop();
+                    zoomedOut = false;
+                    zoomedIn = true;
                     animationController.dispose();
                     Navigator.push(
                         context,
@@ -266,8 +282,8 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                         setState(
                               () {
                             round++;
-                            zoomedOut = false;
 
+zoomedIn = false;
                             animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds:time ),
@@ -294,7 +310,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
         children: <Widget>[
           Center(
             child: Transform.scale(
-              scale: intro ? 1 : zoom.value,
+              scale: intro ? 1 : zoomedIn? 9: zoom.value,
               origin: Offset(
                 -MediaQuery.of(context).size.width * xCoord,
                 MediaQuery.of(context).size.height * yCoord,

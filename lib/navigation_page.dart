@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'house.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'tete.dart';
 
 class NavigationPage extends StatefulWidget {
   @override
@@ -11,15 +12,15 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> {
-//  AudioCache cache = AudioCache();
-//  AudioPlayer player;
+  AudioCache cache = AudioCache();
+  AudioPlayer player;
 
   void _playFile() async {
- //   player = await cache.loop('music/pzz_loop2.wav');
+    player = await cache.loop('music/pzz_loop2.wav');
   }
 
   void _stopFile() {
- //   player?.stop();
+    player?.stop();
   }
 
   @override
@@ -40,7 +41,12 @@ class _NavigationPageState extends State<NavigationPage> {
                 child: Image.asset('assets/images/g1_button.png'),
               ),
               GestureDetector(
-                  onTap: () {},
+                  onTap: () {_stopFile();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TetePage()),
+                  );
+                  },
                   child: Image.asset('assets/images/g2_button.png')),
               GestureDetector(
                   onTap: () {},
@@ -52,7 +58,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   void PlayMoulin() async {
     _stopFile();
- //   cache.play('music/intro.mp3');
+   cache.play('music/intro.mp3');
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => HousePage()),
@@ -60,7 +66,14 @@ class _NavigationPageState extends State<NavigationPage> {
   }
 
   @override
+  void dispose() {
+    player.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
+
     _playFile();
   }
 }

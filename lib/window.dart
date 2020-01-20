@@ -17,20 +17,24 @@ class WindowPage extends StatefulWidget {
 class _WindowPageState extends State<WindowPage> {
   _resetScore() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('score', 0);
+    await prefs.setInt('score', 40);
+
   }
+
+
+
   @override
   Widget build(BuildContext context) {
     AudioCache player = AudioCache();
     String track;
 
-_resetScore();
+
 
 
     int round = widget.round;
     switch (round) {
       case 0:
-
+        _resetScore();
         track = 'music/g1_windmill.wav';
 
         break;
@@ -79,13 +83,16 @@ _resetScore();
     );
   }
 
+
+
   Widget Guess(int imageNumber, int round, BuildContext context, String track) {
     bool flipOnTouch = true;
-    int scoreForRound = 10;
+
     List<Map<String, dynamic>> images = List<Map<String, dynamic>>();
     switch (round) {
       case 0:
         {
+
 
           images = [
             {'url': 'assets/images/g1_windmill.png', 'correctAnswer': true},
@@ -97,6 +104,7 @@ _resetScore();
         break;
       case 1:
         {
+
           images = [
 
             {'url': 'assets/images/g1_cat.png', 'correctAnswer': false},
@@ -108,6 +116,7 @@ _resetScore();
         break;
       case 2:
         {
+
           images = [
 
             {'url': 'assets/images/g1_hat.png', 'correctAnswer': false},
@@ -119,6 +128,7 @@ _resetScore();
         break;
       case 3:
         {
+
           images = [
 
             {'url': 'assets/images/g1_socks.png', 'correctAnswer': false},
@@ -132,17 +142,17 @@ _resetScore();
     return FlipCard(
       onFlip: () async {
         if (images[imageNumber]['correctAnswer'] == false) {
-         // scoreForRound = scoreForRound - 3;
+         _reduceScore();
           AudioCache player = AudioCache();
           player.play(track);
           flipOnTouch = false;
         } else {
-          //_addScore(scoreForRound);
-         // int score = await _getScore();
+
+          int score = await _getScore();
           await Future.delayed(Duration(seconds: 2));
           round == 3
               ? Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MoulinResultsPage(1)))
+                  MaterialPageRoute(builder: (context) => MoulinResultsPage(score)))
               : Navigator.pop(context, HousePage());
         }
       },
@@ -162,10 +172,11 @@ _resetScore();
     int score =  await prefs.getInt('score');
     return score;
   }
-   _addScore(int score) async{
+   _reduceScore() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     int _score =  await prefs.getInt('score');
-    await prefs.setInt('score', score+_score);
+    print('score: ' + _score.toString());
+    await prefs.setInt('score',  _score-3);
 
   }
 }
@@ -175,7 +186,7 @@ class DrawGrid extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
       ..color = Colors.black
-      ..strokeWidth = 20;
+      ..strokeWidth = 30;
 
     Offset p1 = Offset(size.width / 2, 0);
     Offset p2 = Offset(size.width / 2, size.height);
