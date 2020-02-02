@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:audioplayers/audio_cache.dart';
-import 'house.dart';
+import 'game_one.dart';
 import 'moulin_results_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,21 +15,15 @@ class WindowPage extends StatefulWidget {
 }
 
 class _WindowPageState extends State<WindowPage> {
-  _resetScore() async{
+  _resetScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('score', 40);
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     AudioCache player = AudioCache();
     String track;
-
-
-
 
     int round = widget.round;
     switch (round) {
@@ -83,8 +77,6 @@ class _WindowPageState extends State<WindowPage> {
     );
   }
 
-
-
   Widget Guess(int imageNumber, int round, BuildContext context, String track) {
     bool flipOnTouch = true;
 
@@ -92,8 +84,6 @@ class _WindowPageState extends State<WindowPage> {
     switch (round) {
       case 0:
         {
-
-
           images = [
             {'url': 'assets/images/g1_windmill.png', 'correctAnswer': true},
             {'url': 'assets/images/g1_balloon.png', 'correctAnswer': false},
@@ -104,9 +94,7 @@ class _WindowPageState extends State<WindowPage> {
         break;
       case 1:
         {
-
           images = [
-
             {'url': 'assets/images/g1_cat.png', 'correctAnswer': false},
             {'url': 'assets/images/g1_dog.png', 'correctAnswer': false},
             {'url': 'assets/images/g1_fish.png', 'correctAnswer': false},
@@ -116,9 +104,7 @@ class _WindowPageState extends State<WindowPage> {
         break;
       case 2:
         {
-
           images = [
-
             {'url': 'assets/images/g1_hat.png', 'correctAnswer': false},
             {'url': 'assets/images/g1_bird.png', 'correctAnswer': true},
             {'url': 'assets/images/g1_kite.png', 'correctAnswer': false},
@@ -128,9 +114,7 @@ class _WindowPageState extends State<WindowPage> {
         break;
       case 3:
         {
-
           images = [
-
             {'url': 'assets/images/g1_socks.png', 'correctAnswer': false},
             {'url': 'assets/images/g1_fish.png', 'correctAnswer': true},
             {'url': 'assets/images/g1_spider.png', 'correctAnswer': false},
@@ -142,18 +126,19 @@ class _WindowPageState extends State<WindowPage> {
     return FlipCard(
       onFlip: () async {
         if (images[imageNumber]['correctAnswer'] == false) {
-         _reduceScore();
+          _reduceScore();
           AudioCache player = AudioCache();
           player.play(track);
           flipOnTouch = false;
         } else {
-
           int score = await _getScore();
           await Future.delayed(Duration(seconds: 2));
           round == 3
-              ? Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => MoulinResultsPage(score)))
-              : Navigator.pop(context, HousePage());
+              ? Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MoulinResultsPage(score)))
+              : Navigator.pop(context, GameOnePage());
         }
       },
       flipOnTouch: flipOnTouch,
@@ -167,17 +152,18 @@ class _WindowPageState extends State<WindowPage> {
       ),
     );
   }
-  Future<int> _getScore()async {
+
+  Future<int> _getScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    int score =  await prefs.getInt('score');
+    int score = await prefs.getInt('score');
     return score;
   }
-   _reduceScore() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    int _score =  await prefs.getInt('score');
-    print('score: ' + _score.toString());
-    await prefs.setInt('score',  _score-3);
 
+  _reduceScore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int _score = await prefs.getInt('score');
+    print('score: ' + _score.toString());
+    await prefs.setInt('score', _score - 3);
   }
 }
 

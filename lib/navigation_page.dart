@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'house.dart';
+import 'game_one.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'tete.dart';
+import 'game_two.dart';
 
 class NavigationPage extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _NavigationPageState extends State<NavigationPage> {
   AudioPlayer player;
 
   void _playFile() async {
-    player = await cache.loop('music/pzz_loop2.wav');
+//    player = await cache.loop('music/pzz_loop2.wav');
   }
 
   void _stopFile() {
@@ -44,7 +44,7 @@ class _NavigationPageState extends State<NavigationPage> {
                   onTap: () {_stopFile();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TetePage()),
+                    MaterialPageRoute(builder: (context) => GameTwoPage()),
                   );
                   },
                   child: Image.asset('assets/images/g2_button.png')),
@@ -61,7 +61,7 @@ class _NavigationPageState extends State<NavigationPage> {
    cache.play('music/intro.mp3');
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HousePage()),
+      MaterialPageRoute(builder: (context) => GameOnePage()),
     );
   }
 

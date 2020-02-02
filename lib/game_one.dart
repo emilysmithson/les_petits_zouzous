@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'window.dart';
 
-class HousePage extends StatefulWidget {
-  HousePage();
+class GameOnePage extends StatefulWidget {
+  GameOnePage();
   @override
   State<StatefulWidget> createState() {
-    return _HousePageState();
+    return _GameOnePageState();
   }
 }
 
-class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
+class _GameOnePageState extends State<GameOnePage>
+    with TickerProviderStateMixin {
   int round = 0;
   double xCoord = 0.175;
   double yCoord = -1 / 14;
@@ -30,7 +31,6 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
 
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -109,7 +109,7 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                 setState(() {});
               })
               ..addStatusListener((status) {
-                if (status == AnimationStatus.completed&& round ==1) {
+                if (status == AnimationStatus.completed && round == 1) {
                   animationController.stop();
                   animationController.dispose();
                   zoomedOut = true;
@@ -123,32 +123,30 @@ class _HousePageState extends State<HousePage> with TickerProviderStateMixin {
                 }
               });
           } else {
-
             zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
                 parent: animationController, curve: Interval(0.0, 1.0)))
               ..addListener(() {
                 setState(() {});
               })
               ..addStatusListener(
-                    (status) {
-                    if (status == AnimationStatus.completed&&zoomedOut) {
-                      zoomedIn = true;
-                      animationController.stop();
+                (status) {
+                  if (status == AnimationStatus.completed && zoomedOut) {
+                    zoomedIn = true;
+                    animationController.stop();
 
                     animationController.dispose();
-                      zoomedOut = false;
-
+                    zoomedOut = false;
 
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WindowPage(round)))
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WindowPage(round)))
                         .whenComplete(
-                          () {
+                      () {
                         setState(
-                              () {
+                          () {
                             round++;
-zoomedIn = false;
+                            zoomedIn = false;
 
                             animationController = AnimationController(
                               vsync: this,
@@ -159,7 +157,6 @@ zoomedIn = false;
                         );
                       },
                     );
-
                   }
                 },
               );
@@ -200,7 +197,7 @@ zoomedIn = false;
               })
               ..addStatusListener(
                 (status) {
-                  if (status == AnimationStatus.completed&&zoomedOut) {
+                  if (status == AnimationStatus.completed && zoomedOut) {
                     animationController.stop();
                     zoomedIn = true;
                     zoomedOut = false;
@@ -215,7 +212,7 @@ zoomedIn = false;
                           () {
                             round++;
 
-zoomedIn = false;
+                            zoomedIn = false;
                             animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds: time),
@@ -267,26 +264,26 @@ zoomedIn = false;
                 setState(() {});
               })
               ..addStatusListener(
-                    (status) {
-                  if (status == AnimationStatus.completed&&zoomedOut) {
+                (status) {
+                  if (status == AnimationStatus.completed && zoomedOut) {
                     animationController.stop();
                     zoomedOut = false;
                     zoomedIn = true;
                     animationController.dispose();
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => WindowPage(round)))
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => WindowPage(round)))
                         .whenComplete(
-                          () {
+                      () {
                         setState(
-                              () {
+                          () {
                             round++;
 
-zoomedIn = false;
+                            zoomedIn = false;
                             animationController = AnimationController(
                               vsync: this,
-                              duration: Duration(seconds:time ),
+                              duration: Duration(seconds: time),
                             );
                             animationController.forward(from: 0);
                           },
@@ -310,7 +307,7 @@ zoomedIn = false;
         children: <Widget>[
           Center(
             child: Transform.scale(
-              scale: intro ? 1 : zoomedIn? 9: zoom.value,
+              scale: intro ? 1 : zoomedIn ? 9 : zoom.value,
               origin: Offset(
                 -MediaQuery.of(context).size.width * xCoord,
                 MediaQuery.of(context).size.height * yCoord,
