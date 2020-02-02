@@ -30,9 +30,10 @@ class GameTwoPageState extends State<GameTwoPage>
   bool secondArea = false;
   bool intro = true;
   void _playFile() async {
-     AudioCache player = AudioCache();
-     player.play('music/tete_epaule.mp3');
+    AudioCache player = AudioCache();
+    player.play('music/tete_epaule.mp3');
   }
+
   var time = 4550;
   var buttonColor = [Colors.white, Colors.white, Colors.white, Colors.white];
   Color color1 = Colors.white;
@@ -167,10 +168,10 @@ class GameTwoPageState extends State<GameTwoPage>
           child: Container(
             height: height,
             width: width,
-            decoration: BoxDecoration(border: Border.all(width: 0.2, color: Colors.grey[600]) ,
+            decoration: BoxDecoration(
+                border: Border.all(width: 0.2, color: Colors.grey[600]),
                 borderRadius: BorderRadius.circular(20),
                 color: buttonColor[colorNumber]),
-
           ),
         ),
       ),
@@ -180,7 +181,7 @@ class GameTwoPageState extends State<GameTwoPage>
   @override
   void initState() {
     startTime = DateTime.now();
-   _playFile();
+    _playFile();
     animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 4550),
@@ -209,68 +210,49 @@ class GameTwoPageState extends State<GameTwoPage>
     animationController.forward();
     Timer(Duration(milliseconds: 4550), () {
       showFirstAreas();
-      print('show firstAreas 1');
     });
     Timer(Duration(milliseconds: 12219), () {
       hideFirstAreas();
-      print('hide first areas 1');
     });
     Timer(Duration(milliseconds: 12220), () {
-      print('zoom in 1');
       zoomIn();
-
     });
     Timer(Duration(milliseconds: 12500), () {
       showSecondAreas();
-      print('show second areas 1');
     });
     Timer(Duration(milliseconds: 17000), () {
-      hideSecondAreas();
-      print('hide second area 1');
       zoomOut();
-      print('zoom out 1');
     });
     Timer(Duration(milliseconds: 17010), () {
       showFirstAreas();
-      print('show firstAreas 2');
     });
     Timer(Duration(milliseconds: 27900), () {
-      hideFirstAreas();
-      print('hide first areas 2');
-      print('zoom in 2');
+
+
       zoomIn();
     });
     Timer(Duration(milliseconds: 27910), () {
       showSecondAreas();
-      print('show second areas 2');
     });
     Timer(Duration(milliseconds: 31800), () {
-      hideSecondAreas();
       zoomOut();
-      print('zoom out 2');
     });
     Timer(Duration(milliseconds: 31810), () {
       showFirstAreas();
-      print('show firstAreas 3');
     });
 
     Timer(Duration(milliseconds: 40050), () {
-      hideFirstAreas();
+
       zoomIn();
-      print('zoom in 3');
     });
     Timer(Duration(milliseconds: 40060), () {
       showSecondAreas();
-      print('show second areas 3');
     });
     Timer(Duration(milliseconds: 43300), () {
-      hideSecondAreas();
       zoomOut();
-      print('zoom out 3');
     });
     Timer(Duration(milliseconds: 43400), () {
       showFirstAreas();
-      print('show firstAreas 4');
     });
   }
 
@@ -326,8 +308,6 @@ class GameTwoPageState extends State<GameTwoPage>
       answer = 'knees';
     }
 
-
-
 // Toes
     else if (((secondsSinceStart >= 6.74) && (secondsSinceStart <= 7.24)) ||
         ((secondsSinceStart >= 7.76) && (secondsSinceStart <= 8.80)) ||
@@ -378,6 +358,7 @@ class GameTwoPageState extends State<GameTwoPage>
   }
 
   void zoomIn() {
+    hideFirstAreas();
     zoom = Tween<double>(begin: 1, end: 2).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)));
     right = Tween<double>(begin: 0, end: 0).animate(
@@ -388,6 +369,7 @@ class GameTwoPageState extends State<GameTwoPage>
   }
 
   void zoomOut() {
+    hideSecondAreas();
     animationController.reverse(from: 0.1);
   }
 
