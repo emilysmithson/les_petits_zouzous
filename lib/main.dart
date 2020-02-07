@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navigation_page.dart';
+import 'landing_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -32,6 +33,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationPage();
+    return LandingPage();
   }
 }

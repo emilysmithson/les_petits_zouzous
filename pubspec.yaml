@@ -67,6 +67,9 @@ flutter:
     - family: CoveredByYourGrace
       fonts:
         - asset: fonts/CoveredByYourGrace-Regular.ttf
+    - family: Sacramento
+      fonts:
+        - asset: fonts/Sacramento-Regular.ttf
 
   #   - family: Trajan Pro
   #     fonts:

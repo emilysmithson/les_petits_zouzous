@@ -128,6 +128,7 @@ class _WindowPageState extends State<WindowPage> {
         if (images[imageNumber]['correctAnswer'] == false) {
           _reduceScore();
           AudioCache player = AudioCache();
+
           player.play(track);
           flipOnTouch = false;
         } else {

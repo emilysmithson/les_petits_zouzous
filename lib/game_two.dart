@@ -13,33 +13,35 @@ class GameTwoPage extends StatefulWidget {
 class GameTwoPageState extends State<GameTwoPage>
     with TickerProviderStateMixin {
   int score = 0;
-  bool start = true;
   AudioCache cache = AudioCache();
   AudioPlayer player;
   bool correct = true;
-  Color color = Colors.white;
   double transparency = 0;
   static var startTime;
   String answer;
   var secondsSinceStart;
   AnimationController animationController;
   Animation right;
-  Animation top;
+  Animation bottom;
   Animation zoom;
+  Animation finale;
   bool firstArea = false;
-  bool secondArea = true;
+  bool secondArea = false;
   bool intro = true;
+  bool outOf = false;
+  bool showMessage = false;
+  var buttonColor = [
+    Colors.white,
+    Colors.white,
+    Colors.white,
+    Colors.white,
+  ];
+  bool clickToReturn = false;
   void _playFile() async {
     AudioCache player = AudioCache();
-    player.play('music/tete_epaule.mp3');
+    player.play('music/gameTwo.wav');
   }
 
-  var time = 4550;
-  var buttonColor = [Colors.white, Colors.white, Colors.white, Colors.white];
-  Color color1 = Colors.white;
-  Color color2 = Colors.white;
-  Color color3 = Colors.white;
-  Color color4 = Colors.white;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -51,71 +53,112 @@ class GameTwoPageState extends State<GameTwoPage>
                 height: 100,
                 width: MediaQuery.of(context).size.width,
                 child: Center(child: Image.asset('assets/images/title.png')))),
-        Stack(children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height - 100,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.lightBlue[100],
-          ),
-          Positioned(
-            bottom: top.value,
-            right: right.value,
-            child: Transform.scale(
-                scale: zoom.value,
-                origin: Offset(30, -300),
-                child: Image.asset('assets/images/character_with_kite.png')),
-          ),
-
-
-          Positioned(
-              top: 20,
-              right: 20,
-              child: Opacity(
-                opacity: transparency,
-                child: Container(
-                    height: 50,
-                    width: 50,
-                    child: Image.asset(correct
-                        ? 'assets/images/correct.png'
-                        : 'assets/images/incorrect.png')),
-              )),
-          Positioned(
-            top: 0,
-            left: 20,
-            child: Text(score.toString(),
-                style: TextStyle(
-                  color: Colors.black,
-                  decoration: TextDecoration.none,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'CoveredByYourGrace',
-                  fontSize: 100,
+        GestureDetector(onTap:(){
+          clickToReturn? Navigator.pop(context):null;
+        },
+          child: Stack(children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height - 100,
+              width: MediaQuery.of(context).size.width,
+              color: Colors.lightBlue[100],
+            ),
+            Positioned(
+              bottom: bottom.value,
+              right: right.value,
+              child: Transform.scale(
+                  scale: zoom.value,
+                  origin: Offset(30, -300),
+                  child: Image.asset('assets/images/character_with_kite.png')),
+            ),
+            Positioned(
+                top: 20,
+                right: 20,
+                child: Opacity(
+                  opacity: transparency,
+                  child: Container(
+                      height: 50,
+                      width: 50,
+                      child: Image.asset(correct
+                          ? 'assets/images/correct.png'
+                          : 'assets/images/incorrect.png')),
                 )),
-          ),
-          firstArea
-              ? areaButton(80, 160, 80, 150, 0, 'head', true)
-              : Container(),
-          firstArea
-              ? areaButton(210, 150, 60, 150, 1, 'shoulders', true)
-              : Container(),
-          firstArea
-              ? areaButton(420, 140, 60, 150, 2, 'knees', true)
-              : Container(),
-          firstArea
-              ? areaButton(500, 100, 50, 100, 3, 'toes', true)
-              : Container(),
-          secondArea
-              ? areaButton(245, 245, 50, 50, 0, 'eyes', true)
-              : Container(),
-          secondArea
-              ? areaButton(310, 330, 80, 80, 1, 'ears', true)
-              : Container(),
-          secondArea
-              ? areaButton(300, 145, 60, 120, 2, 'mouth', true)
-              : Container(),
-          secondArea
-              ? areaButton(240, 180, 60, 60, 3, 'nose', true)
-              : Container(),
-        ]),
+            Positioned(
+              top: 0,
+              left: 30,
+              child: Text(score.toString(),
+                  style: TextStyle(
+                    color: Colors.black,
+                    decoration: TextDecoration.none,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'CoveredByYourGrace',
+                    fontSize: 60,
+                  )),
+            ),
+            outOf
+                ? Positioned(
+                    top: 20,
+                    left: score < 10 ? 50 : 60,
+                    child: Opacity(opacity: finale.value,
+                      child: Text('/66',
+                          style: TextStyle(
+                            color: Colors.black,
+                            decoration: TextDecoration.none,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'CoveredByYourGrace',
+                            fontSize: 60,
+                          )),
+                    ),
+                  )
+                : Container(),
+            showMessage
+                ? Positioned(
+                    top: 200,
+                    left: 20,
+                    child: Opacity(opacity: finale.value,
+                      child: Text(
+                          score < 20
+                              ? 'Rejoue!'
+                              : score < 35
+                                  ? 'Pas Mal!'
+                                  : score < 45
+                                      ? 'Bien!'
+                                      : score < 66 ? 'Bravo!' : 'Parfait!',
+                          style: TextStyle(
+                            color: Colors.red,
+                            decoration: TextDecoration.none,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'CoveredByYourGrace',
+                            fontSize: 70,
+                          )),
+                    ),
+                  )
+                : Container(),
+            firstArea
+                ? areaButton(80, 160, 80, 150, 0, 'head', true)
+                : Container(),
+            firstArea
+                ? areaButton(210, 150, 60, 150, 1, 'shoulders', true)
+                : Container(),
+            firstArea
+                ? areaButton(420, 140, 60, 150, 2, 'knees', true)
+                : Container(),
+            firstArea
+                ? areaButton(520, 100, 50, 100, 3, 'toes', true)
+                : Container(),
+            secondArea
+                ? areaButton(200, 245, 50, 50, 0, 'eyes', true)
+                : Container(),
+            secondArea
+                ? areaButton(265, 330, 80, 80, 1, 'ears', true)
+                : Container(),
+            secondArea
+                ? areaButton(255, 145, 60, 120, 2, 'mouth', true)
+                : Container(),
+            secondArea
+                ? areaButton(190, 180, 60, 60, 3, 'nose', true)
+                : Container(),
+          ]),
+        ),
       ],
     );
   }
@@ -137,11 +180,8 @@ class GameTwoPageState extends State<GameTwoPage>
           setState(() {
             buttonColor[colorNumber] = Colors.blue;
           });
-          secondsSinceStart =
-              DateTime.now().difference(startTime).inMilliseconds;
+
           updateAnswer();
-          print(secondsSinceStart);
-          print(answer);
           if (buttonName == answer) {
             transparency = 1;
             correct = true;
@@ -172,7 +212,8 @@ class GameTwoPageState extends State<GameTwoPage>
             decoration: BoxDecoration(
                 border: Border.all(width: 0.2, color: Colors.grey[600]),
                 borderRadius: BorderRadius.circular(20),
-                color: buttonColor[colorNumber]),
+                color:
+                buttonColor[colorNumber]),
           ),
         ),
       ),
@@ -185,101 +226,82 @@ class GameTwoPageState extends State<GameTwoPage>
     _playFile();
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 4550),
+      duration: Duration(milliseconds:
+      4550
+        ),
     );
-    right = Tween<double>(begin: -300, end: 100).animate(
+    right = Tween<double>(begin: -300, end: 160).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
-    top = Tween<double>(begin: 470, end: 470).animate(
+    bottom = Tween<double>(begin: 470, end: 550).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
-    zoom = Tween<double>(begin: 0.7, end: 1.9).animate(
+    zoom = Tween<double>(begin: 0.7, end: 2).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed && intro == true) {
-          intro = false;
-        }
       });
+    finale = Tween<double>(begin: 0, end: 1). animate(CurvedAnimation(parent: animationController, curve: Interval(0.7,1)));
 
     animationController.forward();
     Timer(Duration(milliseconds: 4550), () {
       showFirstAreas();
     });
-//    Timer(Duration(milliseconds: 12219), () {
-//      hideFirstAreas();
-//    });
-//    Timer(Duration(milliseconds: 12220), () {
-//      zoomIn();
-//    });
-//    Timer(Duration(milliseconds: 12500), () {
-//      showSecondAreas();
-//    });
-//    Timer(Duration(milliseconds: 17000), () {
-//      zoomOut();
-//    });
-//    Timer(Duration(milliseconds: 17010), () {
-//      showFirstAreas();
-//    });
-//    Timer(Duration(milliseconds: 27900), () {
-//      zoomIn();
-//    });
-//    Timer(Duration(milliseconds: 27910), () {
-//      showSecondAreas();
-//    });
-//    Timer(Duration(milliseconds: 31800), () {
-//      zoomOut();
-//    });
-//    Timer(Duration(milliseconds: 31810), () {
-//      showFirstAreas();
-//    });
-//
-//    Timer(Duration(milliseconds: 40050), () {
-//      zoomIn();
-//    });
-//    Timer(Duration(milliseconds: 40060), () {
-//      showSecondAreas();
-//    });
-//    Timer(Duration(milliseconds: 43300), () {
-//      zoomOut();
-//    });
-//    Timer(Duration(milliseconds: 43400), () {
-//      showFirstAreas();
-//    });
+    Timer(Duration(milliseconds: 12219), () {
+      hideFirstAreas();
+    });
+    Timer(Duration(milliseconds: 12220), () {
+      zoomIn();
+    });
+    Timer(Duration(milliseconds: 12500), () {
+      showSecondAreas();
+    });
+    Timer(Duration(milliseconds: 17000), () {
+      zoomOut();
+    });
+    Timer(Duration(milliseconds: 17010), () {
+      showFirstAreas();
+    });
+    Timer(Duration(milliseconds: 27900), () {
+      zoomIn();
+    });
+    Timer(Duration(milliseconds: 27910), () {
+      showSecondAreas();
+    });
+    Timer(Duration(milliseconds: 31800), () {
+      zoomOut();
+    });
+    Timer(Duration(milliseconds: 31810), () {
+      showFirstAreas();
+    });
+
+    Timer(Duration(milliseconds: 40050), () {
+      zoomIn();
+    });
+    Timer(Duration(milliseconds: 40060), () {
+      showSecondAreas();
+    });
+    Timer(Duration(milliseconds: 43300), () {
+      zoomOut();
+    });
+    Timer(Duration(milliseconds: 43400), () {
+      showFirstAreas();
+    });
     Timer(
-        Duration(
-            milliseconds:
-                //45900
-                5000), () {
-      //   hideFirstAreas();
-//      zoom = Tween<double>(begin: 1, end: 0.5).animate(
-//          CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
-//    //  animationController.forward(from: 0);
-//      right = Tween<double>(begin: 0, end: -70).animate(
-//          CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
-//        ..addListener(() {
-//          setState(() {});
-//        });
-//      top = Tween<double>(begin: 20, end: -250).animate(
-//          CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
-//        ..addListener(() {
-//          setState(() {});
-//        });
+        Duration(milliseconds: 45900
+            //     5000
+            ), () {
+  showResults();
     });
   }
 
-  @override
-  void dispose() {
-    player.dispose();
-  }
-
   void updateAnswer() {
+    secondsSinceStart =
+        DateTime.now().difference(startTime).inMilliseconds;
 // Head
     if (((secondsSinceStart >= 4550) && (secondsSinceStart <= 5650)) ||
         ((secondsSinceStart >= 8810) && (secondsSinceStart <= 9650)) ||
@@ -377,12 +399,19 @@ class GameTwoPageState extends State<GameTwoPage>
 
   void zoomIn() {
     hideFirstAreas();
-    zoom = Tween<double>(begin: 1.9, end: 4).animate(
+    zoom = Tween<double>(begin: 2, end: 4).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)));
-    right = Tween<double>(begin: 0, end: 0).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
-    top = Tween<double>(begin: 20, end: -200).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
+    animationController.forward(from: 0);
+    right = Tween<double>(begin: 160, end: 320).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)))
+      ..addListener(() {
+        setState(() {});
+      });
+    bottom = Tween<double>(begin: 550, end: 1030).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)))
+      ..addListener(() {
+        setState(() {});
+      });
     animationController.forward(from: 0);
   }
 
@@ -413,5 +442,29 @@ class GameTwoPageState extends State<GameTwoPage>
     setState(() {
       secondArea = false;
     });
+  }
+  void showResults(){
+    hideFirstAreas();
+    zoom = Tween<double>(begin: 2, end: 1.1).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
+
+    right = Tween<double>(begin: 160, end: 20).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+      ..addListener(() {
+        setState(() {});
+      });
+    bottom = Tween<double>(begin: 550, end: 60).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+      ..addListener(() {
+        setState(() {});
+      })..addStatusListener((status){if(status==AnimationStatus.completed){
+        clickToReturn = true;
+        setState(() {
+
+        });
+      }});
+    outOf = true;
+    showMessage = true;
+    animationController.forward(from: 0);
   }
 }
