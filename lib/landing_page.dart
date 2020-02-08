@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navigation_page.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -22,9 +23,17 @@ class _LandingPageState extends State<LandingPage>
   Animation fadeOut;
   double animationStart = 0.3;
   double animationEnd = 0.5;
+  final AssetsAudioPlayer assetsAudioPlayer = AssetsAudioPlayer();
 
   @override
   void initState() {
+    assetsAudioPlayer.open(
+      AssetsAudio(
+        asset: 'pzz_loop2.wav',
+        folder: "assets/music/",
+      ),
+    );
+    assetsAudioPlayer.play();
     animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 6),

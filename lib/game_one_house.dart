@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'window.dart';
+import 'game_one_window.dart';
 
 class GameOnePage extends StatefulWidget {
   GameOnePage();

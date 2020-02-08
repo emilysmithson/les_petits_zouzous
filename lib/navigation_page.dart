@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'game_one.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'game_one_house.dart';
+//import 'package:audioplayers/audio_cache.dart';
+//import 'package:audioplayers/audioplayers.dart';
 import 'game_two.dart';
 
 class NavigationPage extends StatefulWidget {
@@ -12,8 +12,8 @@ class NavigationPage extends StatefulWidget {
 }
 
 class _NavigationPageState extends State<NavigationPage> with SingleTickerProviderStateMixin{
-  AudioCache cache = AudioCache();
-  AudioPlayer player;
+//  AudioCache cache = AudioCache();
+//  AudioPlayer player;
   AnimationController animationController;
   Animation fadeIn;
 
@@ -22,7 +22,7 @@ class _NavigationPageState extends State<NavigationPage> with SingleTickerProvid
   }
 
   void _stopFile() {
-    player?.stop();
+//    player?.stop();
   }
 
 
@@ -81,7 +81,7 @@ class _NavigationPageState extends State<NavigationPage> with SingleTickerProvid
 
   void PlayMoulin() async {
     _stopFile();
-    cache.play('music/intro.mp3');
+//    cache.play('music/intro.mp3');
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => GameOnePage()),
@@ -90,7 +90,7 @@ class _NavigationPageState extends State<NavigationPage> with SingleTickerProvid
 
   @override
   void dispose() {
-    player.dispose();
+//    player.dispose();
     super.dispose();
   }
 

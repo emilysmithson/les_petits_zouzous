@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audio_cache.dart';
+//import 'package:audioplayers/audio_cache.dart';
 import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
+//import 'package:audioplayers/audioplayers.dart';
 
 class GameTwoPage extends StatefulWidget {
   @override
@@ -13,8 +13,8 @@ class GameTwoPage extends StatefulWidget {
 class GameTwoPageState extends State<GameTwoPage>
     with TickerProviderStateMixin {
   int score = 0;
-  AudioCache cache = AudioCache();
-  AudioPlayer player;
+//  AudioCache cache = AudioCache();
+//  AudioPlayer player;
   bool correct = true;
   double transparency = 0;
   static var startTime;
@@ -38,8 +38,8 @@ class GameTwoPageState extends State<GameTwoPage>
   ];
   bool clickToReturn = false;
   void _playFile() async {
-    AudioCache player = AudioCache();
-    player.play('music/gameTwo.wav');
+  //  AudioCache player = AudioCache();
+  //  player.play('music/gameTwo.wav');
   }
 
   @override
@@ -53,9 +53,10 @@ class GameTwoPageState extends State<GameTwoPage>
                 height: 100,
                 width: MediaQuery.of(context).size.width,
                 child: Center(child: Image.asset('assets/images/title.png')))),
-        GestureDetector(onTap:(){
-          clickToReturn? Navigator.pop(context):null;
-        },
+        GestureDetector(
+          onTap: () {
+            clickToReturn ? Navigator.pop(context) : null;
+          },
           child: Stack(children: <Widget>[
             Container(
               height: MediaQuery.of(context).size.height - 100,
@@ -98,7 +99,8 @@ class GameTwoPageState extends State<GameTwoPage>
                 ? Positioned(
                     top: 20,
                     left: score < 10 ? 50 : 60,
-                    child: Opacity(opacity: finale.value,
+                    child: Opacity(
+                      opacity: finale.value,
                       child: Text('/66',
                           style: TextStyle(
                             color: Colors.black,
@@ -114,7 +116,8 @@ class GameTwoPageState extends State<GameTwoPage>
                 ? Positioned(
                     top: 200,
                     left: 20,
-                    child: Opacity(opacity: finale.value,
+                    child: Opacity(
+                      opacity: finale.value,
                       child: Text(
                           score < 20
                               ? 'Rejoue!'
@@ -212,8 +215,7 @@ class GameTwoPageState extends State<GameTwoPage>
             decoration: BoxDecoration(
                 border: Border.all(width: 0.2, color: Colors.grey[600]),
                 borderRadius: BorderRadius.circular(20),
-                color:
-                buttonColor[colorNumber]),
+                color: buttonColor[colorNumber]),
           ),
         ),
       ),
@@ -226,9 +228,7 @@ class GameTwoPageState extends State<GameTwoPage>
     _playFile();
     animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds:
-      4550
-        ),
+      duration: Duration(milliseconds: 4550),
     );
     right = Tween<double>(begin: -300, end: 160).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
@@ -245,7 +245,8 @@ class GameTwoPageState extends State<GameTwoPage>
       ..addListener(() {
         setState(() {});
       });
-    finale = Tween<double>(begin: 0, end: 1). animate(CurvedAnimation(parent: animationController, curve: Interval(0.7,1)));
+    finale = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: animationController, curve: Interval(0.7, 1)));
 
     animationController.forward();
     Timer(Duration(milliseconds: 4550), () {
@@ -295,13 +296,12 @@ class GameTwoPageState extends State<GameTwoPage>
         Duration(milliseconds: 45900
             //     5000
             ), () {
-  showResults();
+      showResults();
     });
   }
 
   void updateAnswer() {
-    secondsSinceStart =
-        DateTime.now().difference(startTime).inMilliseconds;
+    secondsSinceStart = DateTime.now().difference(startTime).inMilliseconds;
 // Head
     if (((secondsSinceStart >= 4550) && (secondsSinceStart <= 5650)) ||
         ((secondsSinceStart >= 8810) && (secondsSinceStart <= 9650)) ||
@@ -443,7 +443,8 @@ class GameTwoPageState extends State<GameTwoPage>
       secondArea = false;
     });
   }
-  void showResults(){
+
+  void showResults() {
     hideFirstAreas();
     zoom = Tween<double>(begin: 2, end: 1.1).animate(
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
@@ -457,12 +458,13 @@ class GameTwoPageState extends State<GameTwoPage>
         CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
-      })..addStatusListener((status){if(status==AnimationStatus.completed){
-        clickToReturn = true;
-        setState(() {
-
-        });
-      }});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          clickToReturn = true;
+          setState(() {});
+        }
+      });
     outOf = true;
     showMessage = true;
     animationController.forward(from: 0);

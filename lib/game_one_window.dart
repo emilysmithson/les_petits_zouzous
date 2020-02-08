@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'game_one.dart';
+//import 'package:audioplayers/audio_cache.dart';
+import 'game_one_house.dart';
 import 'moulin_results_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +22,7 @@ class _WindowPageState extends State<WindowPage> {
 
   @override
   Widget build(BuildContext context) {
-    AudioCache player = AudioCache();
+  //  AudioCache player = AudioCache();
     String track;
 
     int round = widget.round;
@@ -41,7 +41,7 @@ class _WindowPageState extends State<WindowPage> {
       case 3:
         track = 'music/g1_fish.wav';
     }
-    player.play(track);
+ //   player.play(track);
 
     return Scaffold(
       body: Stack(
@@ -127,9 +127,9 @@ class _WindowPageState extends State<WindowPage> {
       onFlip: () async {
         if (images[imageNumber]['correctAnswer'] == false) {
           _reduceScore();
-          AudioCache player = AudioCache();
+          //AudioCache player = AudioCache();
 
-          player.play(track);
+          //player.play(track);
           flipOnTouch = false;
         } else {
           int score = await _getScore();
