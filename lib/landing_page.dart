@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'navigation_page.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class LandingPage extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage>
     with SingleTickerProviderStateMixin {
-  AnimationController animationController;
+  AnimationController _animationController;
   Animation animateTreeX;
   Animation animateTreeY;
   Animation animateUmbrellaX;
@@ -23,72 +24,79 @@ class _LandingPageState extends State<LandingPage>
   Animation fadeOut;
   double animationStart = 0.3;
   double animationEnd = 0.5;
-  final AssetsAudioPlayer assetsAudioPlayer = AssetsAudioPlayer();
+  AudioPlayer player = AudioPlayer();
+  final cache = AudioCache();
 
   @override
   void initState() {
-    assetsAudioPlayer.open(
-      AssetsAudio(
-        asset: 'pzz_loop2.wav',
-        folder: "assets/music/",
-      ),
-    );
-    assetsAudioPlayer.play();
-    animationController = AnimationController(
+    playFile(String fileName) async {
+      player = await cache.loop(fileName);
+    }
+
+    playFile('music/pzz_loop2.wav');
+    _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 6),
-    )..addStatusListener((status){if(status == AnimationStatus.completed){
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NavigationPage()));
-    }});
-    animateTreeX = Tween<double>(begin: 30, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => NavigationPage(player)));
+        }
+      });
+    animateTreeX = Tween<double>(begin: 30, end: -100).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
-    animateTreeY = Tween<double>(begin: 50, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+    animateTreeY = Tween<double>(begin: 50, end: -100).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
     animateUmbrellaX = Tween<double>(begin: 30, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+        CurvedAnimation(
+            parent: _animationController,
+            curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
     animateUmbrellaY = Tween<double>(begin: 50, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+        CurvedAnimation(
+            parent: _animationController,
+            curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
-    animateBoyX = Tween<double>(begin: 30, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+    animateBoyX = Tween<double>(begin: 30, end: -100).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
-    animateBoyY = Tween<double>(begin: 50, end: -100).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(animationStart, animationEnd)))
+    animateBoyY = Tween<double>(begin: 50, end: -100).animate(CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(animationStart, animationEnd)))
       ..addListener(() {
         setState(() {});
       });
     animateZscale = Tween<double>(begin: 1, end: 0.4).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0.6, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0.6, 1)))
       ..addListener(() {
         setState(() {});
       });
     animateZY = Tween<double>(begin: 120, end: -55).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0.6, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0.6, 1)))
       ..addListener(() {
         setState(() {});
       });
     fadeOut = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0.4, 0.6)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0.4, 0.6)))
       ..addListener(() {
         setState(() {});
       });
-    animationController.forward();
+    _animationController.forward();
   }
 
   @override
@@ -160,7 +168,8 @@ class _LandingPageState extends State<LandingPage>
                       child: Image.asset('assets/images/logo_white.png')))),
           Align(
               alignment: Alignment.topCenter,
-              child: Padding(padding:EdgeInsets.fromLTRB(0, 40, 40, 0),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 40, 40, 0),
                 child: Opacity(
                     opacity: fadeOut.value,
                     child: Image.asset('assets/images/pzz.png')),
@@ -169,4 +178,10 @@ class _LandingPageState extends State<LandingPage>
       ),
     );
   }
+
+  @override
+  void dispose() {
+
+  }
+
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-//import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audio_cache.dart';
 import 'dart:async';
-//import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'navigation_page.dart';
 
 class GameTwoPage extends StatefulWidget {
+  AudioPlayer player = AudioPlayer();
+  GameTwoPage(this.player);
   @override
   State<StatefulWidget> createState() {
     return GameTwoPageState();
@@ -20,7 +23,7 @@ class GameTwoPageState extends State<GameTwoPage>
   static var startTime;
   String answer;
   var secondsSinceStart;
-  AnimationController animationController;
+  AnimationController _animationController;
   Animation right;
   Animation bottom;
   Animation zoom;
@@ -38,131 +41,142 @@ class GameTwoPageState extends State<GameTwoPage>
   ];
   bool clickToReturn = false;
   void _playFile() async {
-  //  AudioCache player = AudioCache();
-  //  player.play('music/gameTwo.wav');
+    //  AudioCache player = AudioCache();
+    //  player.play('music/gameTwo.wav');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Align(
-            alignment: Alignment.topCenter,
-            child: Container(
-                color: Colors.black,
-                height: 100,
+    return WillPopScope(
+      onWillPop: () {
+
+        _animationController?.stop();
+        _animationController?.dispose();
+        widget.player?.stop();
+        navigateBack();
+      },
+      child: Column(
+        children: <Widget>[
+          Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                  color: Colors.black,
+                  height: 100,
+                  width: MediaQuery.of(context).size.width,
+                  child:
+                      Center(child: Image.asset('assets/images/title.png')))),
+          GestureDetector(
+            onTap: () {
+              clickToReturn ? navigateBack() : null;
+            },
+            child: Stack(children: <Widget>[
+              Container(
+                height: MediaQuery.of(context).size.height - 100,
                 width: MediaQuery.of(context).size.width,
-                child: Center(child: Image.asset('assets/images/title.png')))),
-        GestureDetector(
-          onTap: () {
-            clickToReturn ? Navigator.pop(context) : null;
-          },
-          child: Stack(children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height - 100,
-              width: MediaQuery.of(context).size.width,
-              color: Colors.lightBlue[100],
-            ),
-            Positioned(
-              bottom: bottom.value,
-              right: right.value,
-              child: Transform.scale(
-                  scale: zoom.value,
-                  origin: Offset(30, -300),
-                  child: Image.asset('assets/images/character_with_kite.png')),
-            ),
-            Positioned(
-                top: 20,
-                right: 20,
-                child: Opacity(
-                  opacity: transparency,
-                  child: Container(
-                      height: 50,
-                      width: 50,
-                      child: Image.asset(correct
-                          ? 'assets/images/correct.png'
-                          : 'assets/images/incorrect.png')),
-                )),
-            Positioned(
-              top: 0,
-              left: 30,
-              child: Text(score.toString(),
-                  style: TextStyle(
-                    color: Colors.black,
-                    decoration: TextDecoration.none,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'CoveredByYourGrace',
-                    fontSize: 60,
+                color: Colors.lightBlue[100],
+              ),
+              Positioned(
+                bottom: bottom.value,
+                right: right.value,
+                child: Transform.scale(
+                    scale: zoom.value,
+                    origin: Offset(30, -300),
+                    child:
+                        Image.asset('assets/images/character_with_kite.png')),
+              ),
+              Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Opacity(
+                    opacity: transparency,
+                    child: Container(
+                        height: 50,
+                        width: 50,
+                        child: Image.asset(correct
+                            ? 'assets/images/correct.png'
+                            : 'assets/images/incorrect.png')),
                   )),
-            ),
-            outOf
-                ? Positioned(
-                    top: 20,
-                    left: score < 10 ? 50 : 60,
-                    child: Opacity(
-                      opacity: finale.value,
-                      child: Text('/66',
-                          style: TextStyle(
-                            color: Colors.black,
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'CoveredByYourGrace',
-                            fontSize: 60,
-                          )),
-                    ),
-                  )
-                : Container(),
-            showMessage
-                ? Positioned(
-                    top: 200,
-                    left: 20,
-                    child: Opacity(
-                      opacity: finale.value,
-                      child: Text(
-                          score < 20
-                              ? 'Rejoue!'
-                              : score < 35
-                                  ? 'Pas Mal!'
-                                  : score < 45
-                                      ? 'Bien!'
-                                      : score < 66 ? 'Bravo!' : 'Parfait!',
-                          style: TextStyle(
-                            color: Colors.red,
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'CoveredByYourGrace',
-                            fontSize: 70,
-                          )),
-                    ),
-                  )
-                : Container(),
-            firstArea
-                ? areaButton(80, 160, 80, 150, 0, 'head', true)
-                : Container(),
-            firstArea
-                ? areaButton(210, 150, 60, 150, 1, 'shoulders', true)
-                : Container(),
-            firstArea
-                ? areaButton(420, 140, 60, 150, 2, 'knees', true)
-                : Container(),
-            firstArea
-                ? areaButton(520, 100, 50, 100, 3, 'toes', true)
-                : Container(),
-            secondArea
-                ? areaButton(200, 245, 50, 50, 0, 'eyes', true)
-                : Container(),
-            secondArea
-                ? areaButton(265, 330, 80, 80, 1, 'ears', true)
-                : Container(),
-            secondArea
-                ? areaButton(255, 145, 60, 120, 2, 'mouth', true)
-                : Container(),
-            secondArea
-                ? areaButton(190, 180, 60, 60, 3, 'nose', true)
-                : Container(),
-          ]),
-        ),
-      ],
+              Positioned(
+                top: 0,
+                left: 30,
+                child: Text(score.toString(),
+                    style: TextStyle(
+                      color: Colors.black,
+                      decoration: TextDecoration.none,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'CoveredByYourGrace',
+                      fontSize: 60,
+                    )),
+              ),
+              outOf
+                  ? Positioned(
+                      top: 20,
+                      left: score < 10 ? 50 : 80,
+                      child: Opacity(
+                        opacity: finale.value,
+                        child: Text('/66',
+                            style: TextStyle(
+                              color: Colors.black,
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'CoveredByYourGrace',
+                              fontSize: 60,
+                            )),
+                      ),
+                    )
+                  : Container(),
+              showMessage
+                  ? Positioned(
+                      top: 200,
+                      left: 20,
+                      child: Opacity(
+                        opacity: finale.value,
+                        child: Text(
+                            score < 20
+                                ? 'Rejoue!'
+                                : score < 35
+                                    ? 'Pas Mal!'
+                                    : score < 45
+                                        ? 'Bien!'
+                                        : score < 66 ? 'Bravo!' : 'Parfait!',
+                            style: TextStyle(
+                              color: Colors.red,
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'CoveredByYourGrace',
+                              fontSize: 70,
+                            )),
+                      ),
+                    )
+                  : Container(),
+              firstArea
+                  ? areaButton(80, 160, 80, 150, 0, 'head', true)
+                  : Container(),
+              firstArea
+                  ? areaButton(210, 150, 60, 150, 1, 'shoulders', true)
+                  : Container(),
+              firstArea
+                  ? areaButton(420, 140, 60, 150, 2, 'knees', true)
+                  : Container(),
+              firstArea
+                  ? areaButton(520, 100, 50, 100, 3, 'toes', true)
+                  : Container(),
+              secondArea
+                  ? areaButton(200, 245, 50, 50, 0, 'eyes', true)
+                  : Container(),
+              secondArea
+                  ? areaButton(265, 330, 80, 80, 1, 'ears', true)
+                  : Container(),
+              secondArea
+                  ? areaButton(255, 145, 60, 120, 2, 'mouth', true)
+                  : Container(),
+              secondArea
+                  ? areaButton(190, 180, 60, 60, 3, 'nose', true)
+                  : Container(),
+            ]),
+          ),
+        ],
+      ),
     );
   }
 
@@ -226,29 +240,29 @@ class GameTwoPageState extends State<GameTwoPage>
   void initState() {
     startTime = DateTime.now();
     _playFile();
-    animationController = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 4550),
     );
     right = Tween<double>(begin: -300, end: 160).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
     bottom = Tween<double>(begin: 470, end: 550).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
     zoom = Tween<double>(begin: 0.7, end: 2).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
     finale = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0.7, 1)));
+        CurvedAnimation(parent: _animationController, curve: Interval(0.7, 1)));
 
-    animationController.forward();
+    _animationController.forward();
     Timer(Duration(milliseconds: 4550), () {
       showFirstAreas();
     });
@@ -400,62 +414,62 @@ class GameTwoPageState extends State<GameTwoPage>
   void zoomIn() {
     hideFirstAreas();
     zoom = Tween<double>(begin: 2, end: 4).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)));
-    animationController.forward(from: 0);
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)));
+    _animationController.forward(from: 0);
     right = Tween<double>(begin: 160, end: 320).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)))
       ..addListener(() {
         setState(() {});
       });
     bottom = Tween<double>(begin: 550, end: 1030).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 0.1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)))
       ..addListener(() {
         setState(() {});
       });
-    animationController.forward(from: 0);
+    _animationController.forward(from: 0);
   }
 
   void zoomOut() {
     hideSecondAreas();
-    animationController.reverse(from: 0.1);
+    _animationController.reverse(from: 0.1);
   }
 
   void showFirstAreas() {
-    setState(() {
+    mounted? setState(() {
       firstArea = true;
-    });
+    }):null;
   }
 
   void hideFirstAreas() {
-    setState(() {
+    mounted? setState(() {
       firstArea = false;
-    });
+    }): null;
   }
 
   void showSecondAreas() {
-    setState(() {
+    mounted? setState(() {
       secondArea = true;
-    });
+    }):null;
   }
 
   void hideSecondAreas() {
-    setState(() {
+    mounted? setState(() {
       secondArea = false;
-    });
+    }): null;
   }
 
   void showResults() {
     hideFirstAreas();
     zoom = Tween<double>(begin: 2, end: 1.1).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)));
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)));
 
     right = Tween<double>(begin: 160, end: 20).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
     bottom = Tween<double>(begin: 550, end: 60).animate(
-        CurvedAnimation(parent: animationController, curve: Interval(0, 1)))
+        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       })
@@ -467,6 +481,13 @@ class GameTwoPageState extends State<GameTwoPage>
       });
     outOf = true;
     showMessage = true;
-    animationController.forward(from: 0);
+    _animationController.forward(from: 0);
+  }
+  navigateBack() async {
+    AudioPlayer player = AudioPlayer();
+    final cache = AudioCache();
+    player = await cache.loop('music/pzz_loop2.wav');
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NavigationPage(player)));
   }
 }

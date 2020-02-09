@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
-//import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'game_one_house.dart';
 import 'moulin_results_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'navigation_page.dart';
 
 class WindowPage extends StatefulWidget {
   int round;
@@ -15,6 +17,9 @@ class WindowPage extends StatefulWidget {
 }
 
 class _WindowPageState extends State<WindowPage> {
+  AudioPlayer player = AudioPlayer();
+  final cache = AudioCache();
+
   _resetScore() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('score', 40);
@@ -22,15 +27,12 @@ class _WindowPageState extends State<WindowPage> {
 
   @override
   Widget build(BuildContext context) {
-  //  AudioCache player = AudioCache();
     String track;
-
     int round = widget.round;
     switch (round) {
       case 0:
         _resetScore();
         track = 'music/g1_windmill.wav';
-
         break;
       case 1:
         track = 'music/g1_hands.wav';
@@ -41,38 +43,44 @@ class _WindowPageState extends State<WindowPage> {
       case 3:
         track = 'music/g1_fish.wav';
     }
- //   player.play(track);
+    playFile(track);
+    return WillPopScope(onWillPop: (){
+      navigateBack();
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          CustomPaint(
-            child: Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
+      player?.stop();
+    }
+    ,
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            CustomPaint(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+              ),
+              painter: DrawGrid(),
             ),
-            painter: DrawGrid(),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Guess(0, round, context, track),
-                  Guess(1, round, context, track)
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Guess(2, round, context, track),
-                  Guess(3, round, context, track),
-                ],
-              ),
-            ],
-          )
-        ],
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Guess(0, round, context, track),
+                    Guess(1, round, context, track)
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Guess(2, round, context, track),
+                    Guess(3, round, context, track),
+                  ],
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -125,11 +133,11 @@ class _WindowPageState extends State<WindowPage> {
 
     return FlipCard(
       onFlip: () async {
+
         if (images[imageNumber]['correctAnswer'] == false) {
           _reduceScore();
-          //AudioCache player = AudioCache();
-
-          //player.play(track);
+          stopFile();
+       playFile(track);
           flipOnTouch = false;
         } else {
           int score = await _getScore();
@@ -139,7 +147,7 @@ class _WindowPageState extends State<WindowPage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => MoulinResultsPage(score)))
-              : Navigator.pop(context, GameOnePage());
+              : Navigator.pop(context, GameOnePage(player));
         }
       },
       flipOnTouch: flipOnTouch,
@@ -166,6 +174,22 @@ class _WindowPageState extends State<WindowPage> {
     print('score: ' + _score.toString());
     await prefs.setInt('score', _score - 3);
   }
+  navigateBack() async {
+    AudioPlayer player = AudioPlayer();
+    final cache = AudioCache();
+    player = await cache.loop('music/pzz_loop2.wav');
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NavigationPage(player)));
+  }
+  @override
+  void initState() {}
+  playFile(String fileName) async {
+    player = await cache.play(fileName);
+  }
+
+  stopFile() {
+    player?.stop();
+  }
 }
 
 class DrawGrid extends CustomPainter {
@@ -187,4 +211,5 @@ class DrawGrid extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
   }
+
 }

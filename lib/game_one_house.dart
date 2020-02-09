@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'game_one_window.dart';
+import 'navigation_page.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class GameOnePage extends StatefulWidget {
-  GameOnePage();
+  AudioPlayer player = AudioPlayer();
+  GameOnePage(this.player);
   @override
   State<StatefulWidget> createState() {
     return _GameOnePageState();
@@ -15,7 +19,7 @@ class _GameOnePageState extends State<GameOnePage>
   double xCoord = 0.175;
   double yCoord = -1 / 14;
   bool intro = true;
-  AnimationController animationController;
+  AnimationController _animationController;
   Animation fade;
   Animation zoom;
   bool zoomedOut = false;
@@ -23,19 +27,18 @@ class _GameOnePageState extends State<GameOnePage>
   bool zoomedIn = false;
   @override
   void initState() {
-    animationController = AnimationController(
+    _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: time),
     );
-    animationController.forward();
+    _animationController.forward();
 
     super.initState();
   }
 
   @override
   void dispose() {
-    animationController.dispose();
-    print('dispose');
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -46,7 +49,7 @@ class _GameOnePageState extends State<GameOnePage>
         {
           time = 4;
           fade = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(
-              parent: animationController, curve: Interval(0, 1)))
+              parent: _animationController, curve: Interval(0, 1)))
             ..addListener(() {
               setState(() {});
             })
@@ -54,15 +57,15 @@ class _GameOnePageState extends State<GameOnePage>
               if (status == AnimationStatus.completed && intro) {
                 intro = false;
                 zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
-                    parent: animationController, curve: Interval(0, 1)))
+                    parent: _animationController, curve: Interval(0, 1)))
                   ..addListener(() {
                     setState(() {});
                   })
                   ..addStatusListener(
                     (status) {
                       if (status == AnimationStatus.completed && round == 0) {
-                        animationController.stop();
-                        animationController.dispose();
+                        _animationController.stop();
+                        _animationController.dispose();
                         Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -74,23 +77,23 @@ class _GameOnePageState extends State<GameOnePage>
                                 round++;
                                 zoomedOut = false;
 
-                                animationController = AnimationController(
+                                _animationController = AnimationController(
                                   vsync: this,
                                   duration: Duration(seconds: 2),
                                 );
-                                animationController.forward(from: 0);
+                                _animationController.forward(from: 0);
                               },
                             );
                           },
                         );
                         zoom.removeStatusListener((status) {});
                         fade.removeStatusListener((status) {});
-                        animationController.removeStatusListener((status) {});
+                        _animationController.removeStatusListener((status) {});
                       }
                     },
                   );
 
-                animationController.forward(from: 0);
+                _animationController.forward(from: 0);
               }
             });
         }
@@ -101,7 +104,7 @@ class _GameOnePageState extends State<GameOnePage>
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
-                parent: animationController,
+                parent: _animationController,
                 curve: Interval(0.0, 1.0),
               ),
             )
@@ -110,21 +113,21 @@ class _GameOnePageState extends State<GameOnePage>
               })
               ..addStatusListener((status) {
                 if (status == AnimationStatus.completed && round == 1) {
-                  animationController.stop();
-                  animationController.dispose();
+                  _animationController.stop();
+                  _animationController.dispose();
                   zoomedOut = true;
-                  animationController = AnimationController(
+                  _animationController = AnimationController(
                     vsync: this,
                     duration: Duration(seconds: time),
                   );
                   xCoord = -0.165;
                   yCoord = -1 / 14;
-                  animationController.forward(from: 0);
+                  _animationController.forward(from: 0);
                 }
               });
           } else {
             zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
-                parent: animationController, curve: Interval(0.0, 1.0)))
+                parent: _animationController, curve: Interval(0.0, 1.0)))
               ..addListener(() {
                 setState(() {});
               })
@@ -132,9 +135,9 @@ class _GameOnePageState extends State<GameOnePage>
                 (status) {
                   if (status == AnimationStatus.completed && zoomedOut) {
                     zoomedIn = true;
-                    animationController.stop();
+                    _animationController.stop();
 
-                    animationController.dispose();
+                    _animationController.dispose();
                     zoomedOut = false;
 
                     Navigator.push(
@@ -148,11 +151,11 @@ class _GameOnePageState extends State<GameOnePage>
                             round++;
                             zoomedIn = false;
 
-                            animationController = AnimationController(
+                            _animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds: time),
                             );
-                            animationController.forward(from: 0);
+                            _animationController.forward(from: 0);
                           },
                         );
                       },
@@ -169,7 +172,7 @@ class _GameOnePageState extends State<GameOnePage>
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
-                parent: animationController,
+                parent: _animationController,
                 curve: Interval(0.0, 1.0),
               ),
             )
@@ -178,30 +181,30 @@ class _GameOnePageState extends State<GameOnePage>
               })
               ..addStatusListener((status) {
                 if (status == AnimationStatus.completed) {
-                  animationController.dispose();
+                  _animationController.dispose();
                   zoomedOut = true;
-                  animationController = AnimationController(
+                  _animationController = AnimationController(
                     vsync: this,
                     duration: Duration(seconds: time),
                   );
                   xCoord = 0.205;
                   yCoord = 0.25;
-                  animationController.forward(from: 0);
+                  _animationController.forward(from: 0);
                 }
               });
           } else {
             zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
-                parent: animationController, curve: Interval(0.0, 1.0)))
+                parent: _animationController, curve: Interval(0.0, 1.0)))
               ..addListener(() {
                 setState(() {});
               })
               ..addStatusListener(
                 (status) {
                   if (status == AnimationStatus.completed && zoomedOut) {
-                    animationController.stop();
+                    _animationController.stop();
                     zoomedIn = true;
                     zoomedOut = false;
-                    animationController.dispose();
+                    _animationController.dispose();
                     Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -213,18 +216,18 @@ class _GameOnePageState extends State<GameOnePage>
                             round++;
 
                             zoomedIn = false;
-                            animationController = AnimationController(
+                            _animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds: time),
                             );
-                            animationController.forward(from: 0);
+                            _animationController.forward(from: 0);
                           },
                         );
                       },
                     );
                     zoom.removeStatusListener((status) {});
                     fade.removeStatusListener((status) {});
-                    animationController.removeStatusListener((status) {});
+                    _animationController.removeStatusListener((status) {});
                   }
                 },
               );
@@ -237,7 +240,7 @@ class _GameOnePageState extends State<GameOnePage>
           if (!zoomedOut) {
             zoom = Tween<double>(begin: 9, end: 1).animate(
               CurvedAnimation(
-                parent: animationController,
+                parent: _animationController,
                 curve: Interval(0.0, 1.0),
               ),
             )
@@ -246,30 +249,30 @@ class _GameOnePageState extends State<GameOnePage>
               })
               ..addStatusListener((status) {
                 if (status == AnimationStatus.completed) {
-                  animationController.dispose();
+                  _animationController.dispose();
                   zoomedOut = true;
-                  animationController = AnimationController(
+                  _animationController = AnimationController(
                     vsync: this,
                     duration: Duration(seconds: time),
                   );
                   xCoord = -0.24;
                   yCoord = 0.25;
-                  animationController.forward(from: 0);
+                  _animationController.forward(from: 0);
                 }
               });
           } else {
             zoom = Tween<double>(begin: 1, end: 9).animate(CurvedAnimation(
-                parent: animationController, curve: Interval(0.0, 1.0)))
+                parent: _animationController, curve: Interval(0.0, 1.0)))
               ..addListener(() {
                 setState(() {});
               })
               ..addStatusListener(
                 (status) {
                   if (status == AnimationStatus.completed && zoomedOut) {
-                    animationController.stop();
+                    _animationController.stop();
                     zoomedOut = false;
                     zoomedIn = true;
-                    animationController.dispose();
+                    _animationController.dispose();
                     Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -281,18 +284,18 @@ class _GameOnePageState extends State<GameOnePage>
                             round++;
 
                             zoomedIn = false;
-                            animationController = AnimationController(
+                            _animationController = AnimationController(
                               vsync: this,
                               duration: Duration(seconds: time),
                             );
-                            animationController.forward(from: 0);
+                            _animationController.forward(from: 0);
                           },
                         );
                       },
                     );
                     zoom.removeStatusListener((status) {});
                     fade.removeStatusListener((status) {});
-                    animationController.removeStatusListener((status) {});
+                    _animationController.removeStatusListener((status) {});
                   }
                 },
               );
@@ -301,29 +304,45 @@ class _GameOnePageState extends State<GameOnePage>
         break;
     }
 
-    return Scaffold(
-      backgroundColor: Colors.lightBlueAccent,
-      body: Stack(
-        children: <Widget>[
-          Center(
-            child: Transform.scale(
-              scale: intro ? 1 : zoomedIn ? 9 : zoom.value,
-              origin: Offset(
-                -MediaQuery.of(context).size.width * xCoord,
-                MediaQuery.of(context).size.height * yCoord,
+    return WillPopScope(
+      onWillPop: () {
+        navigateBack();
+        _animationController?.stop();
+        _animationController?.dispose();
+        widget.player?.stop();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.lightBlueAccent,
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: Transform.scale(
+                scale: intro ? 1 : zoomedIn ? 9 : zoom.value,
+                origin: Offset(
+                  -MediaQuery.of(context).size.width * xCoord,
+                  MediaQuery.of(context).size.height * yCoord,
+                ),
+                child: Image.asset('assets/images/house2.png'),
               ),
-              child: Image.asset('assets/images/house2.png'),
             ),
-          ),
-          Opacity(
-            opacity: intro ? fade.value : 0,
-            child: Container(
-                color: Colors.black,
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width),
-          ),
-        ],
+            Opacity(
+              opacity: intro ? fade.value : 0,
+              child: Container(
+                  color: Colors.black,
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  navigateBack() async {
+    AudioPlayer player = AudioPlayer();
+    final cache = AudioCache();
+    player = await cache.loop('music/pzz_loop2.wav');
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => NavigationPage(player)));
   }
 }
