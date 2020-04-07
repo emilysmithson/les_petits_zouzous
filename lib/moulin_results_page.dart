@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navigation_page.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'package:audioplayers/audioplayers.dart';
+
 
 class MoulinResultsPage extends StatefulWidget {
   int score;
@@ -189,10 +188,7 @@ class _MoulinResultsPageState extends State<MoulinResultsPage>
   navigateBack() async {
     _animationController?.stop();
     _animationController?.dispose();
-    AudioPlayer player = AudioPlayer();
-    final cache = AudioCache();
-    player = await cache.loop('music/pzz_loop2.wav');
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => NavigationPage(player)));
+        MaterialPageRoute(builder: (context) => NavigationPage()));
   }
 }

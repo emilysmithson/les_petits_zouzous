@@ -1,12 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audio_cache.dart';
 import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
-import 'navigation_page.dart';
 
 class GameTwoPage extends StatefulWidget {
-  AudioPlayer player = AudioPlayer();
-  GameTwoPage(this.player);
+  final Function() returnToNavigation;
+  AudioPlayer player;
+  GameTwoPage({this.returnToNavigation, this.player});
   @override
   State<StatefulWidget> createState() {
     return GameTwoPageState();
@@ -14,10 +14,8 @@ class GameTwoPage extends StatefulWidget {
 }
 
 class GameTwoPageState extends State<GameTwoPage>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   int score = 0;
-//  AudioCache cache = AudioCache();
-//  AudioPlayer player;
   bool correct = true;
   double transparency = 0;
   static var startTime;
@@ -40,50 +38,65 @@ class GameTwoPageState extends State<GameTwoPage>
     Colors.white,
   ];
   bool clickToReturn = false;
-  void _playFile() async {
-    //  AudioCache player = AudioCache();
-    //  player.play('music/gameTwo.wav');
-  }
+  bool initialAnimation = true;
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = width * 1.3;
+    double scale0 = 1.3;
+    double bottom0 = height * 2;
+    double right0 = -width * 1.5;
+    double scale1 = 1.7;
+    double bottom1 = height / 2;
+    double right1 = width / 2;
+    double scale2 = 3.2;
+    double bottom2 = height * 0.1;
+    double right2 = width * 0.37;
+    double scale3 = 0.9;
+    double bottom3 = height * 0.2;
+    double right3 = width * 0.2;
+
+    if (initialAnimation) {
+      right = Tween<double>(begin: right0, end: right1).animate(
+          CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
+        ..addListener(() {
+          setState(() {});
+        });
+      bottom = Tween<double>(begin: bottom0, end: bottom1).animate(
+          CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
+        ..addListener(() {
+          setState(() {});
+        });
+      zoom = Tween<double>(begin: scale0, end: scale1).animate(
+          CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
+        ..addListener(() {
+          setState(() {});
+        });
+      finale = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+          parent: _animationController, curve: Interval(0.7, 1)));
+    }
+
     return WillPopScope(
       onWillPop: () {
-
-        _animationController?.stop();
-        _animationController?.dispose();
         widget.player?.stop();
         navigateBack();
+        return null;
       },
-      child: Column(
-        children: <Widget>[
-          Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                  color: Colors.black,
-                  height: 100,
-                  width: MediaQuery.of(context).size.width,
-                  child:
-                      Center(child: Image.asset('assets/images/title.png')))),
-          GestureDetector(
-            onTap: () {
-              clickToReturn ? navigateBack() : null;
-            },
+      child: GestureDetector(
+        onTap: () {
+          clickToReturn ? navigateBack() : null;
+        },
+        child: Container(
+          height: height,
+          width: width,
+          color: Colors.lightBlue[100],
+          child: ClipRect(
             child: Stack(children: <Widget>[
-              Container(
-                height: MediaQuery.of(context).size.height - 100,
-                width: MediaQuery.of(context).size.width,
-                color: Colors.lightBlue[100],
-              ),
-              Positioned(
-                bottom: bottom.value,
-                right: right.value,
-                child: Transform.scale(
-                    scale: zoom.value,
-                    origin: Offset(30, -300),
-                    child:
-                        Image.asset('assets/images/character_with_kite.png')),
-              ),
+              Transform.scale(
+                  scale: zoom.value,
+                  origin: Offset(right.value, bottom.value),
+                  child: Image.asset('assets/images/character_with_kite.png')),
               Positioned(
                   top: 20,
                   right: 20,
@@ -150,32 +163,40 @@ class GameTwoPageState extends State<GameTwoPage>
                     )
                   : Container(),
               firstArea
-                  ? areaButton(80, 160, 80, 150, 0, 'head', true)
+                  ? areaButton(height * 0.1, width * 0.4, height * 0.12,
+                      width * 0.35, 0, 'head', true)
                   : Container(),
               firstArea
-                  ? areaButton(210, 150, 60, 150, 1, 'shoulders', true)
+                  ? areaButton(height * 0.36, width * 0.38, height * 0.12,
+                      width * 0.35, 1, 'shoulders', true)
                   : Container(),
               firstArea
-                  ? areaButton(420, 140, 60, 150, 2, 'knees', true)
+                  ? areaButton(height * 0.75, width * 0.36, height * 0.12,
+                      width * 0.35, 2, 'knees', true)
                   : Container(),
               firstArea
-                  ? areaButton(520, 100, 50, 100, 3, 'toes', true)
+                  ? areaButton(height * 0.88, width * 0.27, height * 0.11,
+                      width * 0.35, 3, 'toes', true)
                   : Container(),
               secondArea
-                  ? areaButton(200, 245, 50, 50, 0, 'eyes', true)
+                  ? areaButton(height * 0.23, width * 0.57, height * 0.1,
+                      width * 0.15, 0, 'eyes', true)
                   : Container(),
               secondArea
-                  ? areaButton(265, 330, 80, 80, 1, 'ears', true)
+                  ? areaButton(height * 0.34, width * 0.78, height * 0.15,
+                      width * 0.2, 1, 'ears', true)
                   : Container(),
               secondArea
-                  ? areaButton(255, 145, 60, 120, 2, 'mouth', true)
+                  ? areaButton(height * 0.35, width * 0.35, height * 0.1,
+                      width * 0.3, 2, 'mouth', true)
                   : Container(),
               secondArea
-                  ? areaButton(190, 180, 60, 60, 3, 'nose', true)
+                  ? areaButton(height * 0.23, width * 0.44, height * 0.1,
+                      width * 0.13, 3, 'nose', true)
                   : Container(),
             ]),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -229,7 +250,9 @@ class GameTwoPageState extends State<GameTwoPage>
             decoration: BoxDecoration(
                 border: Border.all(width: 0.2, color: Colors.grey[600]),
                 borderRadius: BorderRadius.circular(20),
-                color: buttonColor[colorNumber]),
+                color:
+                    //Colors.blue),
+                    buttonColor[colorNumber]),
           ),
         ),
       ),
@@ -239,31 +262,14 @@ class GameTwoPageState extends State<GameTwoPage>
   @override
   void initState() {
     startTime = DateTime.now();
-    _playFile();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 4550),
     );
-    right = Tween<double>(begin: -300, end: 160).animate(
-        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
-      ..addListener(() {
-        setState(() {});
-      });
-    bottom = Tween<double>(begin: 470, end: 550).animate(
-        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
-      ..addListener(() {
-        setState(() {});
-      });
-    zoom = Tween<double>(begin: 0.7, end: 2).animate(
-        CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
-      ..addListener(() {
-        setState(() {});
-      });
-    finale = Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(parent: _animationController, curve: Interval(0.7, 1)));
 
     _animationController.forward();
     Timer(Duration(milliseconds: 4550), () {
+      initialAnimation = false;
       showFirstAreas();
     });
     Timer(Duration(milliseconds: 12219), () {
@@ -412,16 +418,30 @@ class GameTwoPageState extends State<GameTwoPage>
   }
 
   void zoomIn() {
+    double width = MediaQuery.of(context).size.width;
+    double height = width * 1.3;
+    double scale0 = 1;
+    double bottom0 = height;
+    double right0 = width;
+    double scale1 = 1.7;
+    double bottom1 = height / 2;
+    double right1 = width / 2;
+    double scale2 = 3.2;
+    double bottom2 = height * 0.1;
+    double right2 = width * 0.37;
+    double scale3 = 0.9;
+    double bottom3 = height * 0.2;
+    double right3 = width * 0.2;
     hideFirstAreas();
-    zoom = Tween<double>(begin: 2, end: 4).animate(
+    zoom = Tween<double>(begin: scale1, end: scale2).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)));
     _animationController.forward(from: 0);
-    right = Tween<double>(begin: 160, end: 320).animate(
+    right = Tween<double>(begin: right1, end: right2).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)))
       ..addListener(() {
         setState(() {});
       });
-    bottom = Tween<double>(begin: 550, end: 1030).animate(
+    bottom = Tween<double>(begin: bottom1, end: bottom2).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 0.1)))
       ..addListener(() {
         setState(() {});
@@ -435,40 +455,62 @@ class GameTwoPageState extends State<GameTwoPage>
   }
 
   void showFirstAreas() {
-    mounted? setState(() {
-      firstArea = true;
-    }):null;
+    mounted
+        ? setState(() {
+            firstArea = true;
+          })
+        : null;
   }
 
   void hideFirstAreas() {
-    mounted? setState(() {
-      firstArea = false;
-    }): null;
+    mounted
+        ? setState(() {
+            firstArea = false;
+          })
+        : null;
   }
 
   void showSecondAreas() {
-    mounted? setState(() {
-      secondArea = true;
-    }):null;
+    mounted
+        ? setState(() {
+            secondArea = true;
+          })
+        : null;
   }
 
   void hideSecondAreas() {
-    mounted? setState(() {
-      secondArea = false;
-    }): null;
+    mounted
+        ? setState(() {
+            secondArea = false;
+          })
+        : null;
   }
 
   void showResults() {
+    double width = MediaQuery.of(context).size.width;
+    double height = width * 1.3;
+    double scale0 = 1;
+    double bottom0 = height;
+    double right0 = width;
+    double scale1 = 1.7;
+    double bottom1 = height / 2;
+    double right1 = width / 2;
+    double scale2 = 3.2;
+    double bottom2 = height * 0.1;
+    double right2 = width * 0.37;
+    double scale3 = 0.9;
+    double bottom3 = height * 0.2;
+    double right3 = width * 0.2;
     hideFirstAreas();
-    zoom = Tween<double>(begin: 2, end: 1.1).animate(
+    zoom = Tween<double>(begin: scale1, end: scale3).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 1)));
 
-    right = Tween<double>(begin: 160, end: 20).animate(
+    right = Tween<double>(begin: right1, end: right3).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
       });
-    bottom = Tween<double>(begin: 550, end: 60).animate(
+    bottom = Tween<double>(begin: bottom1, end: bottom3).animate(
         CurvedAnimation(parent: _animationController, curve: Interval(0, 1)))
       ..addListener(() {
         setState(() {});
@@ -483,11 +525,25 @@ class GameTwoPageState extends State<GameTwoPage>
     showMessage = true;
     _animationController.forward(from: 0);
   }
+
   navigateBack() async {
-    AudioPlayer player = AudioPlayer();
-    final cache = AudioCache();
-    player = await cache.loop('music/pzz_loop2.wav');
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => NavigationPage(player)));
+    widget.returnToNavigation();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print(state);
+    if (state == AppLifecycleState.inactive) {
+      navigateBack();
+      _animationController?.stop();
+      _animationController?.dispose();
+    }
+  }
+
+  @override
+  void dispose() {
+
+    _animationController.dispose();
+    super.dispose();
   }
 }

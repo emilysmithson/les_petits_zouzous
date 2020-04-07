@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
-import 'navigation_page.dart';
-import 'landing_page.dart';
+import 'home_page.dart';
+import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+
+
+void main() {runApp(MyApp());}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Les Petits Zouzous',
       theme: ThemeData(
 
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Home Page'),
     );
   }
 }
@@ -33,6 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return LandingPage();
+    return HomePage();
   }
 }
